@@ -119,11 +119,20 @@ public class ReservationController {
 			isWithinClosingTime = reservationService.isWithinClosingTime(reservationTime.toString(),
 					closingTime.toString());
 		}
+		
+		if (reservationInputForm.getReservationDate() == null) {
+	        bindingResult.rejectValue("reservationDate", "error.reservationInputForm", "来店日を設定してください。");
+	    }
+		
+		if (reservationInputForm.getNumberOfPeople() == null) {
+	        bindingResult.rejectValue("numberOfPeople", "error.reservationInputForm", "来店人数は1人以上に設定してください。");
+	    }
 
 		if (!isWithinOpeningTime || !isWithinClosingTime || isReservationTime) {
-			bindingResult.rejectValue("reservationDate", "error.reservationInputForm", "来店日を設定してください。");
 			bindingResult.rejectValue("reservationTime", "error.reservationInputForm", "予約時間は営業時間内に設定してください。");
-			bindingResult.rejectValue("numberOfPeople", "error.reservationInputForm", "来店人数は1人以上に設定してください。");
+		}
+		
+		if (bindingResult.hasErrors()) {
 			model.addAttribute("errorMessage", "予約内容に不備があります。");
 			model.addAttribute("reservationInputForm", reservationInputForm);
  			model.addAttribute("restaurant", restaurant);
@@ -135,8 +144,8 @@ public class ReservationController {
 			model.addAttribute("hasFavorite", hasFavorite);
 			
 			return "restaurants/show";
-			
-		}
+	    }
+		
 		redirectAttributes.addFlashAttribute("reservationInputForm", reservationInputForm);
 
 		return "redirect:/restaurants/{id}/reservations/confirm";

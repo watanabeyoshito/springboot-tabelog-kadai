@@ -1,0 +1,154 @@
+html {
+   font-size: 14px;
+ }
+ 
+ body {
+   font-family: 'Noto Sans JP', sans-serif;  
+ }
+ 
+ h1 {
+   font-size: 1.5rem;
+ }
+ 
+ h2 {
+   font-size: 1.475rem;
+ }
+ 
+ h3 {
+	 font-size: 1.25rem;
+ }
+ 
+ a {
+   color: #5196a6;
+   text-decoration: none !important;
+ }
+ 
+ a:hover {
+     color: #407784;
+ }
+ 
+ footer {
+   width: 100%;
+   height: 60px;
+   position: absolute;
+   bottom: 0;    
+   background-color: #f2f0eb;
+ }
+ 
+ .nagoyamesi-wrapper {
+   min-height: 100vh;
+   position: relative;
+   padding-bottom: 60px;
+   box-sizing: border-box;
+ }
+ 
+ .nagoyamesi-navbar {
+   min-height: 60px;
+ }
+ 
+ .nagoyamesi-logo {
+   height: 30px;
+   width: 172px;
+   height: 40%;
+ }
+ 
+ .nagoyamesi-btn {
+   background-color: #5196a6 !important;   
+   transition: 0.1s;
+ }
+ 
+ .nagoyamesi-btn:hover {
+   opacity: 0.8;   
+ }
+ 
+ .nagoyamesi-page-link {
+   color: #5196a6;
+ }
+ 
+ .nagoyamesi-page-link:hover {
+   color: #407784;
+ }
+ 
+ .nagoyamesi-active {
+   background-color: #5196a6 !important;
+   border-color: #5196a6 !important;
+ }
+ 
+.nagoyamesi-pre-wrap {
+   /* 改行文字で行を折り返す */
+   white-space: pre-wrap;
+ }
+ 
+ .nagoyamesi-link-danger {
+     color: #f2594b;
+ }
+ 
+ .nagoyamesi-link-danger:hover {
+     color: #a63c3c;
+ }
+ 
+ .nagoyamesi-btn-danger {
+     background-color: #f2594b !important;
+     transition: 0.1s;
+ }
+ 
+ .nagoyamesi-btn-danger:hover {
+   opacity: 0.8;   
+ }
+ 
+ .nagoyamesi-dropdown-item:active {
+   background-color: #5196a6;
+ }
+ 
+ .nagoyamesi-card-link {
+   transition: 0.3s;
+ }
+ 
+ .nagoyamesi-card-link:hover {
+   opacity: 0.7;
+ }
+ 
+ .nagoyamesi-horizontal-card-image {
+   width: 100%;
+   height: 240px;
+   object-fit: cover;
+ }
+ 
+ .nagoyamesi-sort-box {
+   width: 150px;
+ }
+ 
+ .nagoyamesi-vertical-card-image {
+   width: 100%;
+   height: 150px;
+   object-fit: cover;
+ }
+ 
+ .nagoyamesi-search-form {
+     max-width: 300px;
+ }
+ 
+ .nagoyamesi-star{
+	 color:#ffa500;
+ }
+ 
+ .nagoyamesi-star:focus{
+	 color:#ffa500;
+ }
+ 
+ .carousel-section {
+    text-align: center;
+}
+
+.carouselImg {
+    height: 400px;  
+    width: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+ 
+ @media screen and (min-width: 1400px) {
+   .nagoyamesi-container {
+     max-width: 1200px;
+   }
+ }

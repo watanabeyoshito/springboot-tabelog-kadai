@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+ <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+     <head>
+         <<div th:replace="~{fragment :: meta}"></div>   
+              
+         <div th:replace="~{fragment :: styles}"></div>
+         	
+         <title>NAGOYAMESI</title>
+         
+         <!-- slickの読み込み -->
+		   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
+		   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+     </head>
+     <body>
+         <div class="nagoyamesi-wrapper">
+             <!-- ヘッダー -->
+             <div th:replace="~{fragment :: header}"></div>
+             
+             <main>
+                 <div class="container pt-4 pb-5 nagoyamesi-container">
+                     <div th:if="${param.loggedIn}" class="alert alert-info">
+                         ログインしました。
+                     </div>  
+                     
+                     <div th:if="${param.loggedOut}" class="alert alert-info">
+                         ログアウトしました。
+                     </div>
+                     
+                     <div th:if="${successMessage}" class="alert alert-info">
+                         <span th:text="${successMessage}"></span>
+                     </div>
+                     
+                     <section class="carousel-section">
+						 <div class="carousel">
+				           <div>
+				             <img class="carouselImg" src="images/topimage01.jpg" alt="topimage01">
+				           </div>
+				           <div>
+				             <img class="carouselImg" src="images/topimage02.jpg" alt="topimage02">
+				           </div>
+				           <div>
+				             <img class="carouselImg" src="images/topimage03.jpg" alt="topimage03">
+				           </div>
+				         </div>
+					 </section>
+                     
+                     <div class="d-flex justify-content-center mt-4">                                            
+                         <form method="get" th:action="@{/restaurants}" class="mb-4 nagoyamesi-search-form">
+                             <div class="input-group">
+                                 <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="店舗名・カテゴリ">
+                                 <button type="submit" class="btn text-white shadow-sm nagoyamesi-btn">検索</button> 
+                             </div>               
+                         </form>                        
+                     </div>
+                     
+                     <h2 class="text-center mb-3">新着</h2>
+                     <div class="row row-cols-lg-5 row-cols-2 g-3 mb-4">                                        
+                         <div class="col" th:each="newrestaurant : ${newrestaurants}">
+                             <a th:href="@{/restaurants/__${newrestaurant.getId()}__}" class="link-dark nagoyamesi-card-link">
+                                 <div class="card h-100">                                                                        
+                                     <img th:if="${newrestaurant.getImageName()}" th:src="@{/storage/__${newrestaurant.getImageName()}__}" class="card-img-top nagoyamesi-vertical-card-image" alt="店舗画像">                                     
+                                     <img th:unless="${newrestaurant.getImageName()}" th:src="@{/images/noImage.png}" class="card-img-top nagoyamesi-vertical-card-image" alt="NO IMAGE">                                                                                                                        
+                                     <div class="card-body">                                    
+                                         <h3 class="card-title" th:text="${newrestaurant.getName()}"></h3>
+                                         <p class="card-text mb-1">
+                                             <small class="text-muted" th:text="${newrestaurant.getAddress()}"></small>                                            
+                                         </p>
+                                         <p class="card-text">
+                                             <span th:text="${#numbers.formatInteger(newrestaurant.getLowestPrice(), 1, 'COMMA') + '円〜'}"></span>                                            
+                                         </p>                                    
+                                     </div>
+                                 </div>    
+                             </a>            
+                         </div>                                               
+                     </div>
+                     
+                     <div class="text-center">
+						 <a th:href="@{/restaurants}" class="btn text-white shadow-sm nagoyamesi-btn fs-5">すべて見る</a>
+					 </div>
+                     
+                 </div>
+                 
+             </main>
+             
+             <!-- フッター -->
+             <div th:replace="~{fragment :: footer}"></div>
+         </div>    
+         
+         <div th:replace="~{fragment :: scripts}"></div>
+         
+		<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+		<script src="/js/script.js"></script>
+     </body>
+ </html>

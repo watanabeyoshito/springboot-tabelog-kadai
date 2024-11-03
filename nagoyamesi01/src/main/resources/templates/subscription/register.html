@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www/thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div>
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+		<title>有料会員加入</title>
+	</head>
+	<body>
+		<div class="nagoyamesi-wrapper">
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<main>
+				 <div class="container pt-4 pb-5 nagoyamesi-container">
+                     <div class="row justify-content-center">
+                         <div class="col-xl-5 col-xl-6 col-lg-7">
+                             <nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                 <ol class="breadcrumb mb-0"> 
+                                     <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>                                                            
+                                     <li class="breadcrumb-item active" aria-current="page">有料会員加入</li>
+                                 </ol>
+                             </nav> 
+                             
+                             <h2 class="mb-3 text-center">有料会員加入</h2>
+                             
+                             <div class="card">
+ 								 <div class="card-body">
+   									 <h3 class="card-title">月額３００円で以下の機能が利用できるようになります。</h3>
+  									  <ul>
+											<li>予約機能</li>
+											<li>お気に入り機能</li>
+											<li>レビュー投稿</li>
+										</ul>
+										<form th:action="@{/subscription/create}" method="post">
+											<div class="form-group d-flex justify-content-center">
+												<button id="paymentButton" class="btn text-white shadow-sm w-100 nagoyamesi-btn">決済する</button>
+											</div>
+										</form>
+ 								 </div>
+ 							 </div>
+                         </div>
+                     </div>
+				 </div>
+			</main>
+			
+			<div th:replace="~{fragment :: footer}"></div>
+		</div>
+		<div th:replace="~{fragment :: scripts}"></div>
+		<script src="https://js.stripe.com/v3"></script>
+         <script th:inline="javascript">
+             const sessionId = /*[[${sessionId}]]*/"sessionId";                
+         </script>        
+         <script th:src="@{/js/stripe.js}"></script>  
+	</body>
+</html>

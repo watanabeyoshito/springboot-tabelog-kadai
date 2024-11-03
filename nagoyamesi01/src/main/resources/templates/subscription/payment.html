@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+ <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">    
+     <head>
+         <div th:replace="~{fragment :: meta}"></div>   
+              
+         <div th:replace="~{fragment :: styles}"></div>
+           
+         <title>クレジットカード情報編集</title>   
+         <script src="https://js.stripe.com/v3/"></script>
+     </head>
+     <body>
+         <div class="nagoyamesi-wrapper">
+             <!-- ヘッダー -->
+             <div th:replace="~{fragment :: header}"></div>
+             
+             <main>
+				 
+				  <div th:if="${errorMessage}" class="alert alert-danger">
+				    <span th:text="${errorMessage}"></span>
+				</div>
+				 
+                 <div class="container pb-5 nagoyamesi-container">
+                     <div class="row justify-content-center">
+                         <div class="col-xl-6 col-lg-7 col-md-8">
+                             <nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                 <ol class="breadcrumb mb-0"> 
+                                     <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>                       
+                                     <li class="breadcrumb-item active" aria-current="page">支払い情報編集</li>
+                                 </ol>
+                             </nav> 
+                             
+                             <h1 class="mb-4 text-center">支払い情報編集</h1>         
+                             
+                             <form id="payment-form" th:action="@{/subscription/payment}" th:object="${paymentEditForm}" method="post">
+								    <input type="hidden" name="id" th:value="${stripeCustomerId}">
+								    <input type="hidden" id="stripeToken" name="stripeToken" />
+							
+							    <!-- Stripe Elementsカードフォーム -->
+							    <div class="form-group row mb-3">
+							        <div class="col-md-4 d-flex align-items-center">
+							            <label for="cardHolderName" class="col-form-label fw-bold">カード名義</label>
+							        </div>
+							        <div class="col-md-8">
+							            <input type="text" class="form-control" th:field="*{cardHolderName}" required placeholder="Taro Samurai"/>
+							        </div>
+							    </div>
+							    <div class="form-group row mb-3">
+							        <div class="col-md-4 d-flex align-items-center">
+							            <label for="card-element" class="col-form-label fw-bold">カード情報</label>
+							        </div>
+							        <div class="col-md-8">
+							            <div id="cardElement" class="form-control"></div>
+							            <div id="cardErrors" role="alert" class="text-danger mt-2"></div>
+							        </div>
+							    </div>
+							
+							    <div class="form-group d-flex justify-content-center my-4">
+							        <button type="submit" class="btn text-white shadow-sm w-50 nagoyamesi-btn">更新</button>
+							    </div>
+							</form>
+							
+							<script>
+						        // StripeとElementsを初期化
+						        const stripe = Stripe('pk_test_51Pt3FIIN3pSzdAqcESdnv92FNRdmtdk3SHQUK9FoPmmoPDXpGn7GPZNSSV1cphijxgmvbkoGJrYzWVxD32a88qe800FBk0pU9S');
+						        const elements = stripe.elements();
+						
+						        // カード情報要素のスタイル設定
+						        const style = {
+						            base: {
+						                color: "#32325d",
+						                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+						                fontSmoothing: "antialiased",
+						                fontSize: "16px",
+						                "::placeholder": {
+						                    color: "#a0aec0"
+						                }
+						            },
+						            invalid: {
+						                color: "#fa755a",
+						                iconColor: "#fa755a"
+						            }
+						        };
+						
+						        // Elementsからカード情報入力フォームを作成
+						        const cardElement = elements.create('card', { style: style });
+						        cardElement.mount('#cardElement');
+						
+						        // カード情報に関するエラーハンドリング
+						        cardElement.on('change', function(event) {
+						            const displayError = document.getElementById('cardErrors');
+						            if (event.error) {
+						                displayError.textContent = event.error.message;
+						            } else {
+						                displayError.textContent = '';
+						            }
+						        });
+						        // フォーム送信時に Stripe の PaymentMethod を作成
+									document.getElementById('payment-form').addEventListener('submit', async function(event) {
+									    event.preventDefault();
+									
+									    // カード情報とカード名義を含む PaymentMethod の作成
+									    const { error, paymentMethod } = await stripe.createPaymentMethod({
+									        type: 'card',
+									        card: cardElement,
+									        billing_details: {
+									            name: document.getElementById('cardHolderName').value,
+									        },
+									    });
+									
+									    if (error) {
+									        // エラーメッセージを表示
+									        const errorElement = document.getElementById('cardErrors');
+									        errorElement.textContent = error.message;
+									    } else {
+									        // 作成した PaymentMethod の ID をフォームの hidden フィールドに設定
+									        document.getElementById('stripeToken').value = paymentMethod.id;
+									        // トークンが生成されたらフォームをサーバーに送信
+									        event.target.submit();
+									    }
+									});
+						    </script>
+                         
+                     </div>
+                 </div>
+             </main>
+             
+             <!-- フッター -->
+             <div th:replace="~{fragment :: footer}"></div>
+         </div>    
+         
+         <div th:replace="~{fragment :: scripts}"></div>  
+   </body>
+ </html>

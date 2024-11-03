@@ -1,8 +1,13 @@
 package com.example.nagoyamesi.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,4 +66,13 @@ public class ReservationService {
 		return parsedFromReservationTime.isBefore(parsedClosingTime)
 				|| parsedFromReservationTime.equals(parsedClosingTime);
 	}
+	
+	public boolean isClosedDays(LocalDate reservationDate, String closedDays) {
+        List<String> closedDaysList = Arrays.asList(closedDays.split(","));
+        DayOfWeek dayOfWeek = reservationDate.getDayOfWeek();
+        String dayOfWeekJapanese = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.JAPANESE);
+        String dayOfWeekStr = dayOfWeek.toString().substring(0, 1).toUpperCase() + dayOfWeek.toString().substring(1).toLowerCase(); // "MONDAY" -> "Monday"
+        return closedDaysList.contains(dayOfWeekJapanese) || closedDaysList.contains(dayOfWeekStr);
+       
+    }
 }

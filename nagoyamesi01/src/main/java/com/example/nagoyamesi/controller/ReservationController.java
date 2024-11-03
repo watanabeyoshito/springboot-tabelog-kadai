@@ -74,81 +74,80 @@ public class ReservationController {
 		return "reservations/index";
 	}
 	
-
 	@GetMapping("/restaurants/{id}/reservations/input")
 	public String input(@PathVariable(name = "id") Integer id,
-			@ModelAttribute ReservationInputForm reservationInputForm,
-			@AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
-			BindingResult bindingResult,
-			RedirectAttributes redirectAttributes,
-			Model model) {
+	                    @ModelAttribute ReservationInputForm reservationInputForm,
+	                    @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+	                    BindingResult bindingResult,
+	                    RedirectAttributes redirectAttributes,
+	                    Model model) {
 
+	    Restaurant restaurant = restaurantRepository.getReferenceById(id);
+	    Category category = categoryRepository.getReferenceById(id);
+	    boolean hasUserAlreadyReviewed = false;
+	    Favorite favorite = null;
+	    boolean hasFavorite = false;
 
-		Restaurant restaurant = restaurantRepository.getReferenceById(id);
-		Category category = categoryRepository.getReferenceById(id);
-		boolean hasUserAlreadyReviewed = false;
-    	Favorite favorite = null;
-    	boolean hasFavorite = false;
-    	
-    	if(userDetailsImpl != null) {
-    		User user =userDetailsImpl.getUser();
-    		hasUserAlreadyReviewed = reviewService.hasUserAlreadyReviewed(restaurant, user);
-    		hasFavorite = favoriteService.hasFavorite(restaurant, user);
-    		if(hasFavorite) {
-    			favorite = favoriteRepository.findByRestaurantAndUser(restaurant, user);
-    		}
-    	}
-    	
-    	List<Review> newRewviews = reviewRepository.findTop6ByRestaurantOrderByCreatedAtDesc(restaurant);
-    	long totalReviewCount = reviewRepository.countByRestaurant(restaurant);
-
-		LocalTime reservationTime = reservationInputForm.getReservationTime();
-		LocalTime openingTime = restaurant.getOpeningTime();
-		LocalTime closingTime = restaurant.getClosingTime();
-
-		boolean isReservationTime = false;
-		boolean isWithinOpeningTime = false;
-		boolean isWithinClosingTime = false;
-
-		if (Objects.isNull(reservationTime)) {
-			isReservationTime = true;
-		} else {
-
-			isWithinOpeningTime = reservationService.isWithinOpeningTime(reservationTime.toString(),
-					openingTime.toString());
-			isWithinClosingTime = reservationService.isWithinClosingTime(reservationTime.toString(),
-					closingTime.toString());
-		}
-		
-		if (reservationInputForm.getReservationDate() == null) {
-	        bindingResult.rejectValue("reservationDate", "error.reservationInputForm", "来店日を設定してください。");
+	    if (userDetailsImpl != null) {
+	        User user = userDetailsImpl.getUser();
+	        hasUserAlreadyReviewed = reviewService.hasUserAlreadyReviewed(restaurant, user);
+	        hasFavorite = favoriteService.hasFavorite(restaurant, user);
+	        if (hasFavorite) {
+	            favorite = favoriteRepository.findByRestaurantAndUser(restaurant, user);
+	        }
 	    }
-		
-		if (reservationInputForm.getNumberOfPeople() == null) {
+
+	    List<Review> newReviews = reviewRepository.findTop6ByRestaurantOrderByCreatedAtDesc(restaurant);
+	    long totalReviewCount = reviewRepository.countByRestaurant(restaurant);
+
+	    LocalTime reservationTime = reservationInputForm.getReservationTime();
+	    LocalDate reservationDate = reservationInputForm.getReservationDate();
+	    LocalTime openingTime = restaurant.getOpeningTime();
+	    LocalTime closingTime = restaurant.getClosingTime();
+
+	    boolean isReservationTime = false;
+	    boolean isWithinOpeningTime = false;
+	    boolean isWithinClosingTime = false;
+
+	    if (Objects.isNull(reservationTime)) {
+	        isReservationTime = true;
+	    } else {
+	        isWithinOpeningTime = reservationService.isWithinOpeningTime(reservationTime.toString(), openingTime.toString());
+	        isWithinClosingTime = reservationService.isWithinClosingTime(reservationTime.toString(), closingTime.toString());
+	    }
+
+	    if (reservationDate == null) {
+	        bindingResult.rejectValue("reservationDate", "error.reservationInputForm", "来店日を設定してください。");
+	    } else {
+	        if (reservationService.isClosedDays(reservationDate, restaurant.getClosedDays())) {
+	            bindingResult.rejectValue("reservationDate", "error.reservationInputForm", "選択された日は定休日です。別の日を選択してください。");
+	        }
+	    }
+
+	    if (reservationInputForm.getNumberOfPeople() == null) {
 	        bindingResult.rejectValue("numberOfPeople", "error.reservationInputForm", "来店人数は1人以上に設定してください。");
 	    }
 
-		if (!isWithinOpeningTime || !isWithinClosingTime || isReservationTime) {
-			bindingResult.rejectValue("reservationTime", "error.reservationInputForm", "予約時間は営業時間内に設定してください。");
-		}
-		
-		if (bindingResult.hasErrors()) {
-			model.addAttribute("errorMessage", "予約内容に不備があります。");
-			model.addAttribute("reservationInputForm", reservationInputForm);
- 			model.addAttribute("restaurant", restaurant);
-			model.addAttribute("category", category);
-			model.addAttribute("hasUserAlreadyReviewed", hasUserAlreadyReviewed);
-			model.addAttribute("newReviews", newRewviews);
-			model.addAttribute("totalReviewCount", totalReviewCount);
-			model.addAttribute("favorite", favorite);
-			model.addAttribute("hasFavorite", hasFavorite);
-			
-			return "restaurants/show";
+	    if (!isWithinOpeningTime || !isWithinClosingTime || isReservationTime) {
+	        bindingResult.rejectValue("reservationTime", "error.reservationInputForm", "予約時間は営業時間内に設定してください。");
 	    }
-		
-		redirectAttributes.addFlashAttribute("reservationInputForm", reservationInputForm);
 
-		return "redirect:/restaurants/{id}/reservations/confirm";
+	    if (bindingResult.hasErrors()) {
+	        model.addAttribute("errorMessage", "予約内容に不備があります。");
+	        model.addAttribute("reservationInputForm", reservationInputForm);
+	        model.addAttribute("restaurant", restaurant);
+	        model.addAttribute("category", category);
+	        model.addAttribute("hasUserAlreadyReviewed", hasUserAlreadyReviewed);
+	        model.addAttribute("newReviews", newReviews);
+	        model.addAttribute("totalReviewCount", totalReviewCount);
+	        model.addAttribute("favorite", favorite);
+	        model.addAttribute("hasFavorite", hasFavorite);
+
+	        return "restaurants/show";
+	    }
+
+	    redirectAttributes.addFlashAttribute("reservationInputForm", reservationInputForm);
+	    return "redirect:/restaurants/{id}/reservations/confirm";
 	}
 
 	@GetMapping("/restaurants/{id}/reservations/confirm")
